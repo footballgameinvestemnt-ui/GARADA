@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Green Plant Investment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a3d2a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 70px;
+        }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f7f9f3;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* Auth Section */
+        .auth-card {
+            padding: 30px 20px;
+            background: white;
+            border-radius: 32px 32px 0 0;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-header h1 {
+            color: #2e7d32;
+            font-size: 1.9rem;
+        }
+        .toggle-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .toggle-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #888;
+        }
+        .toggle-btn.active {
+            color: #2e7d32;
+            border-bottom: 3px solid #2e7d32;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 60px;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .error {
+            color: #d32f2f;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .dashboard {
+            display: none;
+        }
+        /* Top Bar */
+        .top-bar {
+            background: #2e7d32;
+            padding: 20px 16px 12px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .greeting { font-size: 1.2rem; font-weight: bold; }
+        .logout-link { font-size: 0.7rem; cursor: pointer; color: #ffb74d; }
+        .balance-card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            margin: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        .quick-actions {
+            display: flex;
+            justify-content: space-around;
+            margin: 16px;
+            gap: 10px;
+        }
+        .quick-btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 60px;
+            padding: 10px 0;
+            text-align: center;
+            flex: 1;
+            cursor: pointer;
+        }
+        .quick-btn i { font-size: 1.5rem; color: #2e7d32; display: block; margin-bottom: 5px; }
+        .quick-btn span { font-size: 0.7rem; font-weight: 600; }
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            border-top: 1px solid #eee;
+        }
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            color: #888;
+        }
+        .nav-item i { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: #2e7d32; }
+        .panel {
+            display: none;
+            padding: 16px;
+        }
+        .panel.active-panel {
+            display: block;
+        }
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid #e9e9e9;
+        }
+        .vip-card, .withdraw-card, .bank-form {
+            background: white;
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        .vip-title { font-size: 1.2rem; font-weight: bold; color: #2e7d32; }
+        .amount-grid, .bank-select-grid {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .amount-btn, .bank-opt {
+            background: #f4f4f0;
+            padding: 10px;
+            text-align: center;
+            border-radius: 60px;
+            cursor: pointer;
+        }
+        .amount-btn.selected, .bank-opt.selected {
+            background: #2e7d32;
+            color: white;
+        }
+        .copy-btn {
+            background: #2e7d32;
+            padding: 4px 14px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 0.7rem;
+        }
+        .report-item {
+            background: #f9f9f9;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 5px solid #2e7d32;
+        }
+        .status-pending { color: #e67e22; font-weight: bold; }
+        .status-success { color: #27ae60; font-weight: bold; }
+        .status-failed { color: #e74c3c; font-weight: bold; }
+        .modal-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .bank-option-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .three-dot-icon {
+            background: #f0f0f0;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .team-level { background: #f0f2f0; border-radius: 20px; padding: 12px; margin: 10px 0; }
+        .timer-text { font-size: 0.7rem; color: #e67e22; }
+        .avatar-icon { width: 60px; height: 60px; background: #f39c12; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- Auth Section -->
+    <div id="authSection">
+        <div class="auth-card">
+            <div class="auth-header"><h1>🌿 GREEN PLANT</h1><p>Start earning daily income</p></div>
+            <div class="toggle-buttons">
+                <div id="loginTab" class="toggle-btn active">LOG IN</div>
+                <div id="registerTab" class="toggle-btn">REGISTER</div>
+            </div>
+            <div id="loginForm">
+                <div class="form-group"><input type="tel" id="loginPhone" placeholder="Mobile Number"></div>
+                <div class="form-group"><input type="password" id="loginPassword" placeholder="Password"></div>
+                <button id="doLoginBtn">LOG IN</button>
+                <div id="loginError" class="error"></div>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <div class="form-group"><input type="tel" id="regPhone" placeholder="Mobile Number"></div>
+                <div class="form-group"><input type="password" id="regPassword" placeholder="Password"></div>
+                <div class="form-group"><input type="password" id="regConfirm" placeholder="Confirm Password"></div>
+                <div class="form-group"><input type="text" id="inviteCode" placeholder="Invitation Code (optional)"></div>
+                <button id="doRegisterBtn">REGISTER + 200 ETB BONUS</button>
+                <div id="regError" class="error"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="top-bar">
+            <div class="greeting" id="greetingText">🌿 Welcome!</div>
+            <div class="logout-link" id="logoutBtn">← Logout</div>
+        </div>
+        <div class="balance-card">
+            <div>💰 My Balance</div>
+            <div class="balance-amount" id="balanceDisplay">ETB 0.00</div>
+            <div>Total Income: <span id="totalIncome">ETB 0.00</span></div>
+        </div>
+        <div class="quick-actions">
+            <div class="quick-btn" data-action="deposit"><i class="fas fa-download"></i><span>Recharge</span></div>
+            <div class="quick-btn" data-action="withdraw"><i class="fas fa-upload"></i><span>Withdraw</span></div>
+            <div class="quick-btn" data-action="myorder"><i class="fas fa-box"></i><span>My Order</span></div>
+            <div class="quick-btn" data-action="service"><i class="fas fa-headset"></i><span>Service</span></div>
+        </div>
+        <!-- Panels for tabs -->
+        <div id="homePanel" class="panel active-panel"></div>
+        <div id="investPanel" class="panel"></div>
+        <div id="campanyPanel" class="panel"></div>
+        <div id="teamPanel" class="panel"></div>
+        <div id="userPanel" class="panel"></div>
+        <!-- Deposit/Withdraw modals will be shown dynamically -->
+        <div class="bottom-nav">
+            <div class="nav-item" data-nav="home"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="nav-item" data-nav="invest"><i class="fas fa-chart-line"></i><span>Invest</span></div>
+            <div class="nav-item" data-nav="campany"><i class="fas fa-building"></i><span>Campany</span></div>
+            <div class="nav-item" data-nav="team"><i class="fas fa-users"></i><span>Team</span></div>
+            <div class="nav-item" data-nav="user"><i class="fas fa-user"></i><span>User</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- DATA MODELS ----------
+    let currentUser = null;
+    function getUsers() { return JSON.parse(localStorage.getItem("gp_users") || "{}"); }
+    function saveUsers(u) { localStorage.setItem("gp_users", JSON.stringify(u)); }
+    function getUserStats(phone) { let s = localStorage.getItem("gp_stats_"+phone); return s ? JSON.parse(s) : { balance:200, totalIncome:200, totalDeposit:0, totalWithdraw:0, lastCheckIn:null, lastBonusDate:null }; }
+    function saveUserStats(phone, stats) { localStorage.setItem("gp_stats_"+phone, JSON.stringify(stats)); }
+    function getUserBank(phone) { let b = localStorage.getItem("gp_bank_"+phone); return b ? JSON.parse(b) : null; }
+    function saveUserBank(phone, bank) { localStorage.setItem("gp_bank_"+phone, JSON.stringify(bank)); }
+    function getUserPurchases(phone) { let p = localStorage.getItem("gp_purch_"+phone); return p ? JSON.parse(p) : []; }
+    function saveUserPurchases(phone, p) { localStorage.setItem("gp_purch_"+phone, JSON.stringify(p)); }
+    function getDepositRequests(phone) { let d = localStorage.getItem("gp_dep_req_"+phone); return d ? JSON.parse(d) : []; }
+    function saveDepositRequests(phone, d) { localStorage.setItem("gp_dep_req_"+phone, JSON.stringify(d)); }
+    function getWithdrawRequests(phone) { let w = localStorage.getItem("gp_wd_req_"+phone); return w ? JSON.parse(w) : []; }
+    function saveWithdrawRequests(phone, w) { localStorage.setItem("gp_wd_req_"+phone, JSON.stringify(w)); }
+    function getReferralTree() { return JSON.parse(localStorage.getItem("gp_refs") || "{}"); }
+    function saveReferralTree(t) { localStorage.setItem("gp_refs", JSON.stringify(t)); }
+    function getTransactions(phone) { let t = localStorage.getItem("gp_txns_"+phone); return t ? JSON.parse(t) : []; }
+    function saveTransactions(phone, tx) { localStorage.setItem("gp_txns_"+phone, JSON.stringify(tx)); }
+
+    // VIP packages
+    const vipLevels = [
+        { id:1, name:"VIP1", price:1200, daily:100, total:30000, days:300 },
+        { id:2, name:"VIP2", price:3200, daily:270, total:81000, days:300 },
+        { id:3, name:"VIP3", price:6400, daily:560, total:168000, days:300 },
+        { id:4, name:"VIP4", price:10000, daily:909, total:272700, days:300 },
+        { id:5, name:"VIP5", price:23000, daily:2150, total:645000, days:300 },
+        { id:6, name:"VIP6", price:43000, daily:4150, total:1245000, days:300 },
+        { id:7, name:"VIP7", price:86000, daily:8600, total:2580003, days:300 },
+        { id:8, name:"VIP8", price:120000, daily:12500, total:3750000, days:300 },
+        { id:9, name:"VIP9", price:240000, daily:26000, total:7800000, days:300 },
+        { id:10, name:"VIP10", price:340000, daily:38000, total:11400003, days:300 }
+    ];
+
+    // Valid TINs
+    const validTINs = ["1234567890", "FT-987654", "TIN123456", "VALID2025", "987654321", "FT-ETH-001"];
+
+    // Helper: add transaction record
+    function addTransaction(phone, type, amount, status, details) {
+        let txns = getTransactions(phone);
+        txns.unshift({ type, amount, status, details, date: new Date().toLocaleString() });
+        saveTransactions(phone, txns);
+    }
+
+    // Daily income processing (exact 24h)
+    function processDailyIncome(phone) {
+        let purchases = getUserPurchases(phone);
+        let stats = getUserStats(phone);
+        let now = Date.now();
+        let updated = false;
+        for(let p of purchases) {
+            if(!p.lastClaim) p.lastClaim = p.purchaseTime;
+            let daysDiff = Math.floor((now - p.lastClaim) / (24*60*60*1000));
+            if(daysDiff >= 1) {
+                let vip = vipLevels.find(v => v.id === p.vipId);
+                if(vip) {
+                    let income = vip.daily * daysDiff;
+                    stats.balance += income;
+                    stats.totalIncome += income;
+                    p.lastClaim += daysDiff * 24*60*60*1000;
+                    updated = true;
+                    addTransaction(phone, "daily_income", income, "success", `From ${vip.name}`);
+                }
+            }
+        }
+        if(updated) {
+            saveUserStats(phone, stats);
+            saveUserPurchases(phone, purchases);
+            if(phone === currentUser) updateDashboardUI();
+        }
+    }
+
+    function updateDashboardUI() {
+        if(!currentUser) return;
+        let stats = getUserStats(currentUser);
+        document.getElementById('balanceDisplay').innerText = `ETB ${stats.balance.toFixed(2)}`;
+        document.getElementById('totalIncome').innerText = `ETB ${stats.totalIncome.toFixed(2)}`;
+        document.getElementById('greetingText').innerHTML = `🌿 Welcome, ${currentUser.slice(-4)}!`;
+    }
+
+    // Referral commission (20%,3%,2%)
+    function distributeReferralCommission(depositor, amount) {
+        let users = getUsers();
+        let referrer = users[depositor]?.referrer;
+        if(!referrer) return;
+        let level = 1;
+        let currentRef = referrer;
+        while(currentRef && level <= 3) {
+            let rate = level === 1 ? 0.20 : (level === 2 ? 0.03 : 0.02);
+            let commission = amount * rate;
+            let refStats = getUserStats(currentRef);
+            refStats.balance += commission;
+            refStats.totalIncome += commission;
+            saveUserStats(currentRef, refStats);
+            addTransaction(currentRef, "commission", commission, "success", `${level===1?"Direct":level===2?"Level2":"Level3"} commission from ${depositor}`);
+            currentRef = users[currentRef]?.referrer;
+            level++;
+        }
+    }
+
+    // Deposit pending timers
+    let activeDepositTimeouts = {}, activeWithdrawTimeouts = {};
+    function finalizeDeposit(reqId, phone, isCorrect) {
+        let reqs = getDepositRequests(phone);
+        let idx = reqs.findIndex(r => r.id === reqId);
+        if(idx === -1 || reqs[idx].status !== 'pending') return;
+        let stats = getUserStats(phone);
+        if(isCorrect) {
+            stats.balance += reqs[idx].amount;
+            stats.totalDeposit += reqs[idx].amount;
+            stats.totalIncome += reqs[idx].amount;
+            reqs[idx].status = 'success';
+            saveUserStats(phone, stats);
+            addTransaction(phone, "deposit", reqs[idx].amount, "success", `Bank: ${reqs[idx].bank}, TIN: ${reqs[idx].tin}`);
+            distributeReferralCommission(phone, reqs[idx].amount);
+            // update active member count for upline (if deposit >0)
+            let users = getUsers();
+            let upline = users[phone]?.referrer;
+            while(upline) {
+                let refTree = getReferralTree();
+                if(refTree[upline] && refTree[upline].members.includes(phone)) {
+                    if(!refTree[upline].activeMembers.includes(phone)) refTree[upline].activeMembers.push(phone);
+                    saveReferralTree(refTree);
+                }
+                upline = users[upline]?.referrer;
+            }
+        } else {
+            reqs[idx].status = 'failed';
+            addTransaction(phone, "deposit", reqs[idx].amount, "failed", `Invalid TIN: ${reqs[idx].tin}`);
+        }
+        saveDepositRequests(phone, reqs);
+        if(phone === currentUser) updateDashboardUI();
+        if(window.refreshDepositModal) window.refreshDepositModal();
+    }
+
+    function addDepositRequest(phone, amount, bank, tin, orderCode) {
+        const isCorrect = validTINs.includes(tin.trim());
+        const delayMs = isCorrect ? 2 * 60 * 1000 : 15 * 60 * 1000;
+        const completeAt = Date.now() + delayMs;
+        const newReq = { id: Date.now()+'-'+Math.random().toString(36).substr(2,6), amount, bank, tin, orderCode, status:'pending', isCorrect, createdAt:Date.now(), completeAt };
+        let reqs = getDepositRequests(phone);
+        reqs.push(newReq);
+        saveDepositRequests(phone, reqs);
+        const timeoutId = setTimeout(() => { finalizeDeposit(newReq.id, phone, isCorrect); delete activeDepositTimeouts[newReq.id]; if(window.refreshDepositModal) window.refreshDepositModal(); }, delayMs);
+        activeDepositTimeouts[newReq.id] = timeoutId;
+    }
+
+    // Withdraw: 20 min pending
+    function finalizeWithdrawal(reqId, phone) {
+        let reqs = getWithdrawRequests(phone);
+        let idx = reqs.findIndex(r => r.id === reqId);
+        if(idx === -1 || reqs[idx].status !== 'pending') return;
+        reqs[idx].status = 'success';
+        saveWithdrawRequests(phone, reqs);
+        addTransaction(phone, "withdraw", reqs[idx].amount, "success", `Bank: ${reqs[idx].bank}`);
+        if(window.refreshWithdrawModal) window.refreshWithdrawModal();
+    }
+
+    function addWithdrawRequest(phone, amount, bankInfo) {
+        const delayMs = 20 * 60 * 1000;
+        const completeAt = Date.now() + delayMs;
+        const newReq = { id: Date.now()+'-'+Math.random().toString(36).substr(2,6), amount, bank: bankInfo.bankName, account: bankInfo.accountNumber, status:'pending', createdAt:Date.now(), completeAt };
+        let reqs = getWithdrawRequests(phone);
+        reqs.push(newReq);
+        saveWithdrawRequests(phone, reqs);
+        const timeoutId = setTimeout(() => { finalizeWithdrawal(newReq.id, phone); delete activeWithdrawTimeouts[newReq.id]; if(window.refreshWithdrawModal) window.refreshWithdrawModal(); }, delayMs);
+        activeWithdrawTimeouts[newReq.id] = timeoutId;
+    }
+
+    function restorePendingTimers(phone) {
+        let depositReqs = getDepositRequests(phone);
+        depositReqs.forEach(r => { if(r.status==='pending' && r.completeAt>Date.now()) { let remaining = r.completeAt-Date.now(); let tid = setTimeout(()=>{ finalizeDeposit(r.id,phone,r.isCorrect); delete activeDepositTimeouts[r.id]; }, remaining); activeDepositTimeouts[r.id]=tid; } else if(r.status==='pending') finalizeDeposit(r.id,phone,r.isCorrect); });
+        let withdrawReqs = getWithdrawRequests(phone);
+        withdrawReqs.forEach(r => { if(r.status==='pending' && r.completeAt>Date.now()) { let remaining = r.completeAt-Date.now(); let tid = setTimeout(()=>{ finalizeWithdrawal(r.id,phone); delete activeWithdrawTimeouts[r.id]; }, remaining); activeWithdrawTimeouts[r.id]=tid; } else if(r.status==='pending') finalizeWithdrawal(r.id,phone); });
+    }
+
+    // UI Rendering Functions (simplified for brevity but complete)
+    function renderHome() {
+        document.getElementById('homePanel').innerHTML = `<div class="card"><h3>Welcome to Green Plant Investment</h3><p>Start your journey with daily income and bonuses.</p></div>`;
+    }
+    function renderInvest() {
+        let html = `<h3>⚡ VIP Investment Packages</h3>`;
+        for(let vip of vipLevels) {
+            html += `<div class="vip-card"><div class="vip-title">🌿 ${vip.name}</div><div>Price: ${vip.price} ETB</div><div>Daily Income: ${vip.daily} ETB</div><div>Total: ${vip.total} ETB</div><div>Days: ${vip.days}</div><button class="purchase-btn" data-id="${vip.id}" data-price="${vip.price}">Purchase ${vip.price} ETB</button></div>`;
+        }
+        document.getElementById('investPanel').innerHTML = html;
+        document.querySelectorAll('.purchase-btn').forEach(btn => {
+            btn.onclick = () => {
+                let price = parseInt(btn.dataset.price);
+                let vipId = parseInt(btn.dataset.id);
+                let stats = getUserStats(currentUser);
+                if(stats.balance >= price) {
+                    stats.balance -= price;
+                    saveUserStats(currentUser, stats);
+                    let purchases = getUserPurchases(currentUser);
+                    purchases.push({ vipId, purchaseTime: Date.now(), lastClaim: Date.now() });
+                    saveUserPurchases(currentUser, purchases);
+                    addTransaction(currentUser, "purchase", price, "success", `${vipLevels.find(v=>v.id===vipId).name} purchased`);
+                    alert("Purchase successful! Daily income will start.");
+                    updateDashboardUI();
+                    renderInvest();
+                } else alert("Insufficient balance!");
+            };
+        });
+    }
+    function renderCampany() {
+        document.getElementById('campanyPanel').innerHTML = `<div class="card"><h2>🌿 Green Plant Investment</h2><img src="https://placehold.co/400x200/2e7d32/white?text=GREEN+PLANT" style="width:100%; border-radius:28px; margin:10px 0;"><p>Green Plant is a revolutionary agricultural investment platform. We use AI-driven farming to generate stable daily returns. Invest in our VIP packages and earn daily income for 300 days. Secure, transparent, and profitable. Join us today!</p></div>`;
+    }
+    function renderTeam() {
+        let users = getUsers();
+        let myCode = users[currentUser]?.inviteCode || (()=>{ let c = Math.random().toString(36).substring(2,8).toUpperCase(); users[currentUser].inviteCode = c; saveUsers(users); return c; })();
+        let link = window.location.href.split('?')[0] + `?ref=${myCode}`;
+        let refTree = getReferralTree();
+        let myTeam = refTree[currentUser] || { members: [], activeMembers: [] };
+        let level1Count = myTeam.members.length;
+        let level1Active = myTeam.activeMembers.length;
+        let level2Count = 0, level2Active = 0, level3Count = 0, level3Active = 0;
+        for(let m of myTeam.members) {
+            let sub = refTree[m] || { members: [], activeMembers: [] };
+            level2Count += sub.members.length;
+            level2Active += sub.activeMembers.length;
+            for(let s of sub.members) {
+                let sub2 = refTree[s] || { members: [] };
+                level3Count += sub2.members.length;
+            }
+        }
+        let teamHtml = `<div class="card"><strong>Invitation code:</strong> ${myCode} <span class="copy-btn" id="copyCode">Copy</span><br>
+        <strong>Invitation link:</strong> ${link} <span class="copy-btn" id="copyLink">Copy</span><hr>
+        <div class="team-level"><strong>Team 1 (20%)</strong><br>Members: ${level1Count}<br>Active: ${level1Active}</div>
+        <div class="team-level"><strong>Team 2 (3%)</strong><br>Members: ${level2Count}<br>Active: ${level2Active}</div>
+        <div class="team-level"><strong>Team 3 (2%)</strong><br>Members: ${level3Count}<br>Active: ${level3Active}</div>
+        <button id="teamDetailBtn">📋 Team Detail</button></div>`;
+        document.getElementById('teamPanel').innerHTML = teamHtml;
+        document.getElementById('copyCode')?.addEventListener('click',()=>{ navigator.clipboard.writeText(myCode); alert("Copied"); });
+        document.getElementById('copyLink')?.addEventListener('click',()=>{ navigator.clipboard.writeText(link); alert("Copied"); });
+        document.getElementById('teamDetailBtn')?.addEventListener('click',()=>{
+            let members = myTeam.members;
+            let list = members.map(m => m.slice(0,2) + "****" + m.slice(-2)).join(", ");
+            alert("Direct Referrals: " + (list || "None"));
+        });
+    }
+
+    // User panel: Deposits, Withdraw, Records, Bouns, Service, Settings, Bank Account
+    function renderUser() {
+        let stats = getUserStats(currentUser);
+        let bank = getUserBank(currentUser);
+        let html = `<div class="card"><div class="avatar-icon"><i class="fas fa-seedling"></i></div>
+        <div><strong>${currentUser}</strong></div>
+        <div>Balance: ${stats.balance.toFixed(2)} ETB</div>
+        <hr>
+        <div class="quick-actions" style="flex-wrap:wrap;">
+            <button id="userDepositsBtn">📥 Deposits</button>
+            <button id="userWithdrawBtn">📤 Withdraw</button>
+            <button id="userRecordsBtn">📋 Records</button>
+            <button id="userBonusBtn">🎁 Bouns</button>
+            <button id="userServiceBtn">📞 Service</button>
+            <button id="userSettingsBtn">⚙️ Settings</button>
+            <button id="userBankBtn">🏦 Bank Account</button>
+        </div>
+        <div id="userDynamicContent"></div>`;
+        document.getElementById('userPanel').innerHTML = html;
+        document.getElementById('userDepositsBtn').onclick = () => showDepositHistory();
+        document.getElementById('userWithdrawBtn').onclick = () => showWithdrawHistory();
+        document.getElementById('userRecordsBtn').onclick = () => showRecords();
+        document.getElementById('userBonusBtn').onclick = () => showBonusClaim();
+        document.getElementById('userServiceBtn').onclick = () => showUserService();
+        document.getElementById('userSettingsBtn').onclick = () => showSettings();
+        document.getElementById('userBankBtn').onclick = () => showBankForm();
+    }
+
+    function showDepositHistory() {
+        let reqs = getDepositRequests(currentUser);
+        let html = `<h4>Deposit History</h4>`;
+        if(reqs.length===0) html+=`<div>No deposits</div>`;
+        else reqs.slice().reverse().forEach(d => {
+            html+=`<div class="report-item">${d.amount} ETB - ${d.bank} - ${d.status} - ${new Date(d.createdAt).toLocaleString()}</div>`;
+        });
+        document.getElementById('userDynamicContent').innerHTML = html;
+    }
+    function showWithdrawHistory() {
+        let reqs = getWithdrawRequests(currentUser);
+        let html = `<h4>Withdrawal History</h4>`;
+        if(reqs.length===0) html+=`<div>No withdrawals</div>`;
+        else reqs.slice().reverse().forEach(w => {
+            html+=`<div class="report-item">${w.amount} ETB - ${w.bank} - ${w.status} - ${new Date(w.createdAt).toLocaleString()}</div>`;
+        });
+        document.getElementById('userDynamicContent').innerHTML = html;
+    }
+    function showRecords() {
+        let txns = getTransactions(currentUser);
+        let html = `<h4>All Transactions</h4>`;
+        if(txns.length===0) html+=`<div>No records</div>`;
+        else txns.forEach(t => {
+            html+=`<div class="report-item">${t.type} - ${t.amount} ETB - ${t.status}<br><small>${t.date}</small></div>`;
+        });
+        document.getElementById('userDynamicContent').innerHTML = html;
+    }
+    function showBonusClaim() {
+        let stats = getUserStats(currentUser);
+        let today = new Date().toDateString();
+        let canClaim = stats.lastBonusDate !== today;
+        let html = `<h4>Daily Bonus</h4><div>Spin to win 4-10 ETB (once per day)</div>`;
+        if(canClaim) {
+            html += `<button id="claimBonusBtn">🎲 RECEIVE</button>`;
+            setTimeout(()=>{
+                document.getElementById('claimBonusBtn')?.addEventListener('click',()=>{
+                    let bonus = Math.floor(Math.random() * 7) + 4;
+                    stats.balance += bonus;
+                    stats.totalIncome += bonus;
+                    stats.lastBonusDate = today;
+                    saveUserStats(currentUser, stats);
+                    addTransaction(currentUser, "bonus", bonus, "success", "Daily bonus");
+                    updateDashboardUI();
+                    alert(`Successful Win ${bonus} ETB`);
+                    showBonusClaim();
+                });
+            },100);
+        } else {
+            html += `<div class="error">Already claimed today</div>`;
+        }
+        document.getElementById('userDynamicContent').innerHTML = html;
+    }
+    function showUserService() {
+        let html = `<h4>Service</h4>
+        <button id="csBtn">🌿 Green Plant Customer Service</button>
+        <button id="offBtn">📢 Green Plant Official Channel</button>`;
+        document.getElementById('userDynamicContent').innerHTML = html;
+        document.getElementById('csBtn')?.addEventListener('click',()=>{ window.open('https://t.me/greenplantcustemerservice'); });
+        document.getElementById('offBtn')?.addEventListener('click',()=>{ window.open('https://t.me/greenplantoffcial'); });
+    }
+    function showSettings() {
+        let html = `<h4>Settings</h4>
+        <div class="avatar-icon" id="avatarChange" style="cursor:pointer;"><i class="fas fa-seedling"></i></div>
+        <div>Click avatar to change to orange plant</div>
+        <hr><button id="changePwdBtn">Change Password</button>
+        <div id="pwdForm" style="display:none; margin-top:10px;">
+            <input type="password" id="oldPass" placeholder="Old Password">
+            <input type="password" id="newPass" placeholder="New Password">
+            <input type="password" id="confPass" placeholder="Confirm Password">
+            <button id="confirmPwdBtn">Confirm</button>
+        </div>`;
+        document.getElementById('userDynamicContent').innerHTML = html;
+        document.getElementById('avatarChange')?.addEventListener('click',()=>{
+            document.querySelector('.avatar-icon').style.background = "#e67e22";
+            alert("Avatar changed to orange plant!");
+        });
+        document.getElementById('changePwdBtn')?.addEventListener('click',()=>{
+            let form = document.getElementById('pwdForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+        document.getElementById('confirmPwdBtn')?.addEventListener('click',()=>{
+            let old = document.getElementById('oldPass').value;
+            let newp = document.getElementById('newPass').value;
+            let conf = document.getElementById('confPass').value;
+            let users = getUsers();
+            if(users[currentUser].password !== old) { alert("Wrong old password"); return; }
+            if(newp !== conf) { alert("New passwords do not match"); return; }
+            if(newp.length < 4) { alert("Password too short"); return; }
+            users[currentUser].password = newp;
+            saveUsers(users);
+            alert("Password changed successfully!");
+            document.getElementById('pwdForm').style.display = 'none';
+        });
+    }
+
+    // Bank Account Form with three-dot modal (15 banks + Telebirr)
+    function showBankForm() {
+        let curr = getUserBank(currentUser);
+        let html = `<div class="bank-form">
+            <div class="bank-header-row" style="display:flex; justify-content:space-between;"><span>🏦 Bank Details</span><div class="three-dot-icon" id="threeDotBank"><i class="fas fa-ellipsis-v"></i></div></div>
+            <input type="text" id="bankNameField" placeholder="Bank Name" value="${curr?.bankName||''}" readonly>
+            <input type="text" id="accNumField" placeholder="Account Number" value="${curr?.accountNumber||''}">
+            <input type="text" id="holderField" placeholder="Holder Name" value="${curr?.holderName||''}">
+            <button id="saveBankBtn">Confirm</button>
+        </div>`;
+        document.getElementById('userDynamicContent').innerHTML = html;
+        const bankList = ["CBE","Awash","Abysinia","Oromia","Dashen","Lion","Zemen","Bunna","Nib","Hibret","Enat","Addis","Berhan","Debub","Tsehay","Telebirr"];
+        document.getElementById('threeDotBank').onclick = () => {
+            let modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `<div class="modal-content"><h4>Select Bank / Telebirr</h4><div id="bankListContainer"></div><button id="closeBankModal">Close</button></div>`;
+            document.body.appendChild(modal);
+            let listDiv = modal.querySelector('#bankListContainer');
+            bankList.forEach(b => {
+                let opt = document.createElement('div');
+                opt.className = 'bank-option-item';
+                opt.innerHTML = b;
+                opt.onclick = () => {
+                    document.getElementById('bankNameField').value = b;
+                    modal.remove();
+                };
+                listDiv.appendChild(opt);
+            });
+            modal.querySelector('#closeBankModal').onclick = () => modal.remove();
+        };
+        document.getElementById('saveBankBtn').onclick = () => {
+            let bn = document.getElementById('bankNameField').value.trim();
+            let acc = document.getElementById('accNumField').value.trim();
+            let holder = document.getElementById('holderField').value.trim();
+            if(!bn || !acc || !holder) { alert("All fields required"); return; }
+            saveUserBank(currentUser, { bankName: bn, accountNumber: acc, holderName: holder });
+            alert("Bank saved!");
+            renderUser();
+        };
+    }
+
+    // Deposit flow (Recharge quick action)
+    let depositAmount = null, depositBank = null;
+    function openDepositFlow() {
+        let amounts = [900,1200,3200,6400,10000,23000,43000,86000,120000,240000,340000];
+        let modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `<div class="modal-content" id="depositModalContent"><h3>Select Amount</h3><div class="amount-grid" id="amtGrid"></div><button id="nextDepositBtn" disabled>Continue</button><button id="cancelDeposit">Cancel</button></div>`;
+        document.body.appendChild(modal);
+        let grid = modal.querySelector('#amtGrid');
+        amounts.forEach(a => { let btn = document.createElement('div'); btn.className='amount-btn'; btn.innerText=a+" ETB"; btn.onclick=()=>{ document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); depositAmount=a; document.getElementById('nextDepositBtn').disabled=false; }; grid.appendChild(btn); });
+        modal.querySelector('#nextDepositBtn').onclick = () => { selectBankForDeposit(modal); };
+        modal.querySelector('#cancelDeposit').onclick = () => modal.remove();
+    }
+    function selectBankForDeposit(prevModal) {
+        let banks = ["Telebirr","CBE"];
+        prevModal.querySelector('#depositModalContent').innerHTML = `<h3>Select Method</h3><div class="bank-select-grid" id="bankGrid"></div><button id="confirmBankBtn" disabled>Continue</button><button id="backAmount">Back</button>`;
+        let grid = prevModal.querySelector('#bankGrid');
+        banks.forEach(b => { let opt = document.createElement('div'); opt.className='bank-opt'; opt.innerText=b; opt.onclick=()=>{ document.querySelectorAll('.bank-opt').forEach(o=>o.classList.remove('selected')); opt.classList.add('selected'); depositBank=b; prevModal.querySelector('#confirmBankBtn').disabled=false; }; grid.appendChild(opt); });
+        prevModal.querySelector('#confirmBankBtn').onclick = () => { showPaymentDetails(prevModal); };
+        prevModal.querySelector('#backAmount').onclick = () => { openDepositFlow(); prevModal.remove(); };
+    }
+    function showPaymentDetails(modal) {
+        let account = depositBank === "Telebirr" ? "0994242558" : "1000529209928";
+        let name = depositBank === "Telebirr" ? "Abrham" : "Abrham Ewunete Ejigalem";
+        let orderCode = "PN"+Date.now()+Math.floor(Math.random()*10000);
+        modal.querySelector('#depositModalContent').innerHTML = `<h3>Payment Details</h3><div style="background:#fff3e0;padding:15px;border-radius:28px;">
+            <div><strong>Bank:</strong> ${depositBank}</div><div><strong>Account:</strong> ${account}</div><div><strong>Name:</strong> ${name}</div>
+            <div><strong>Amount:</strong> ${depositAmount} ETB</div><div><strong>Order Code:</strong> ${orderCode} <span class="copy-btn" id="copyOrder">Copy</span></div>
+        </div><button id="paidBtn">✅ I have made transfer</button><button id="backBank">Back</button>`;
+        modal.querySelector('#copyOrder')?.addEventListener('click',()=>{ navigator.clipboard.writeText(orderCode); alert("Copied"); });
+        modal.querySelector('#paidBtn').onclick = () => {
+            let tin = prompt("Enter FT / TIN number:");
+            if(!tin) { alert("Required"); return; }
+            let isValid = validTINs.includes(tin.trim());
+            let msg = isValid ? "Valid TIN! Pending 2 min." : "Invalid TIN! Pending 15 min.";
+            if(confirm(`TIN: ${tin}\n${msg}\nSubmit?`)) {
+                addDepositRequest(currentUser, depositAmount, depositBank, tin.trim(), orderCode);
+                alert("Deposit request recorded. Check Records.");
+                modal.remove();
+                renderUser();
+            }
+        };
+        modal.querySelector('#backBank').onclick = () => { selectBankForDeposit(modal); };
+    }
+
+    // Withdraw quick action
+    function openWithdrawFlow() {
+        let stats = getUserStats(currentUser);
+        let bank = getUserBank(currentUser);
+        if(!bank) { alert("Add bank account first in User → Bank Account"); return; }
+        let min = 200;
+        let html = `<div class="modal-content"><h3>Withdraw</h3><div>Min: ${min} ETB</div><input type="number" id="wdAmount" placeholder="Amount"><button id="submitWd">Request Withdrawal</button><button id="cancelWd">Cancel</button></div>`;
+        let modal = document.createElement('div');
+        modal.className='modal-overlay';
+        modal.innerHTML=html;
+        document.body.appendChild(modal);
+        modal.querySelector('#submitWd').onclick = () => {
+            let amt = parseFloat(modal.querySelector('#wdAmount').value);
+            if(amt < min) { alert(`Minimum ${min} ETB`); return; }
+            if(amt > stats.balance) { alert("Insufficient"); return; }
+            if(confirm(`Withdraw ${amt} ETB? Pending 20 minutes.`)) {
+                stats.balance -= amt;
+                stats.totalWithdraw += amt;
+                saveUserStats(currentUser, stats);
+                addWithdrawRequest(currentUser, amt, bank);
+                addTransaction(currentUser, "withdraw_request", amt, "pending", "Withdrawal requested");
+                updateDashboardUI();
+                alert("Withdrawal pending (20 min).");
+                modal.remove();
+                renderUser();
+            }
+        };
+        modal.querySelector('#cancelWd').onclick = () => modal.remove();
+    }
+
+    // Quick actions mapping
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+        btn.onclick = () => {
+            let act = btn.dataset.action;
+            if(act === 'deposit') openDepositFlow();
+            else if(act === 'withdraw') openWithdrawFlow();
+            else if(act === 'myorder') {
+                let purchases = getUserPurchases(currentUser);
+                let msg = purchases.map(p=>{ let v=vipLevels.find(v=>v.id===p.vipId); return v?v.name:''; }).join(", ");
+                alert("My Orders: "+(msg||"No purchases"));
+            }
+            else if(act === 'service') showUserService();
+        };
+    });
+
+    // Navigation
+    function showPanel(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active-panel'));
+        document.getElementById(name+'Panel').classList.add('active-panel');
+        if(name === 'home') renderHome();
+        if(name === 'invest') renderInvest();
+        if(name === 'campany') renderCampany();
+        if(name === 'team') renderTeam();
+        if(name === 'user') renderUser();
+    }
+    document.querySelectorAll('.nav-item').forEach(nav => nav.addEventListener('click', () => showPanel(nav.dataset.nav)));
+
+    // Auth
+    function showAuth() { document.getElementById('authSection').style.display='block'; document.getElementById('dashboard').style.display='none'; }
+    function showDashboard() { document.getElementById('authSection').style.display='none'; document.getElementById('dashboard').style.display='block'; updateDashboardUI(); processDailyIncome(currentUser); restorePendingTimers(currentUser); showPanel('home'); }
+    document.getElementById('doLoginBtn').onclick = () => {
+        let phone = document.getElementById('loginPhone').value.trim();
+        let pwd = document.getElementById('loginPassword').value;
+        let users = getUsers();
+        if(!users[phone] || users[phone].password !== pwd) { document.getElementById('loginError').innerText="Invalid credentials"; return; }
+        currentUser = phone; localStorage.setItem("gp_logged", phone); showDashboard();
+    };
+    document.getElementById('doRegisterBtn').onclick = () => {
+        let phone = document.getElementById('regPhone').value.trim();
+        let pwd = document.getElementById('regPassword').value;
+        let conf = document.getElementById('regConfirm').value;
+        let inv = document.getElementById('inviteCode').value.trim();
+        let users = getUsers();
+        if(!phone || !pwd) { document.getElementById('regError').innerText="Fill all fields"; return; }
+        if(pwd !== conf) { document.getElementById('regError').innerText="Passwords mismatch"; return; }
+        if(users[phone]) { document.getElementById('regError').innerText="User exists"; return; }
+        let inviteCode = Math.random().toString(36).substring(2,8).toUpperCase();
+        users[phone] = { password:pwd, inviteCode, referrer:null };
+        if(inv) {
+            for(let p in users) if(users[p].inviteCode === inv) { users[phone].referrer = p; let refTree = getReferralTree(); if(!refTree[p]) refTree[p]={members:[],activeMembers:[]}; if(!refTree[p].members.includes(phone)) refTree[p].members.push(phone); saveReferralTree(refTree); break; }
+        }
+        saveUsers(users);
+        saveUserStats(phone, { balance:200, totalIncome:200, totalDeposit:0, totalWithdraw:0, lastCheckIn:null, lastBonusDate:null });
+        saveDepositRequests(phone, []);
+        saveWithdrawRequests(phone, []);
+        saveUserPurchases(phone, []);
+        addTransaction(phone, "registration_bonus", 200, "success", "Welcome bonus");
+        currentUser = phone; localStorage.setItem("gp_logged", phone); alert("Registration successful! 200 ETB bonus added."); showDashboard();
+    };
+    document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem("gp_logged"); currentUser=null; showAuth(); };
+    let logged = localStorage.getItem("gp_logged");
+    if(logged && getUsers()[logged]) { currentUser = logged; showDashboard(); } else showAuth();
+</script>
+</body>
+</html>
